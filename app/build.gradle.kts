@@ -85,7 +85,6 @@ dependencies {
 
     implementation("androidx.work:work-rxjava2:2.9.0")
 
-    implementation ("com.github.GrenderG:Toasty:1.5.2")
 
     implementation ("androidx.media3:media3-exoplayer:1.2.0")
     implementation ("androidx.media3:media3-exoplayer-dash:1.2.0")
