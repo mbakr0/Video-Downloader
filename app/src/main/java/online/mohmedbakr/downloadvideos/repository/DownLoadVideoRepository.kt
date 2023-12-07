@@ -19,7 +19,6 @@ class DownLoadVideoRepository(private val downloadManager: DownloadManager, priv
     }
 
     private fun openStream(video: VideoItemUi) {
-        video.inProgress.value = true
         val file = File(file, "${video.title}.mp4")
         val request = DownloadManager.Request(video.urlVideo.toUri())
             .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE)
@@ -40,12 +39,10 @@ class DownLoadVideoRepository(private val downloadManager: DownloadManager, priv
                 when (cursor.getInt(columnIndex)) {
                     DownloadManager.STATUS_FAILED or DownloadManager.STATUS_PENDING or DownloadManager.STATUS_PAUSED-> {
                         finishDownload = true
-                        video.inProgress.value = false
                     }
                     DownloadManager.STATUS_SUCCESSFUL -> {
                         video.currentValue.value = totalSize
                         finishDownload = true
-                        video.inProgress.value = false
                     }
                     DownloadManager.STATUS_RUNNING -> {
                         if (totalSize >= 0) {

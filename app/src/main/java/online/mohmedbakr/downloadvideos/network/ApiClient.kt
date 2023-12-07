@@ -64,7 +64,7 @@ object ApiClientInstance {
     private val loggingInterceptor = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
     private val InterceptorChain = { chain:Interceptor.Chain->
         val request = chain.request().newBuilder()
-            .header("X-RapidAPI-Key","API KEY")
+            .header("X-RapidAPI-Key","API_KEY")
             .build()
         chain.proceed(request)
     }

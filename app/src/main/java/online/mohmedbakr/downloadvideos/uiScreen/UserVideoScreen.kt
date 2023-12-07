@@ -22,11 +22,11 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -113,21 +113,16 @@ fun VideoList(
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun ItemList(videoItemUiState: VideoItemUi, viewModel: MainViewModel, navController: NavController) {
-    var showDownloadIcon by remember { mutableStateOf(true) }
-    val currentValue by remember { videoItemUiState.currentValue }
-
+    val inProgress = remember { mutableStateOf(false) }
     Column (modifier = Modifier.padding(8.dp)
         .clickable(
             indication = null,
             interactionSource = MutableInteractionSource()) {
-            if (URLUtil.isValidUrl(videoItemUiState.urlVideo))
-            {
+            if (URLUtil.isValidUrl(videoItemUiState.urlVideo)) {
                 val encodedUrl = URLEncoder.encode(videoItemUiState.urlVideo, StandardCharsets.UTF_8.toString())
                 navController.navigate(NavigationItem.VideoPlayer.withData(encodedUrl))
-
             }
     }){
-
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -144,36 +139,37 @@ fun ItemList(videoItemUiState: VideoItemUi, viewModel: MainViewModel, navControl
             )
             Text(text = videoItemUiState.title,
                 Modifier.weight(1f))
-            if (showDownloadIcon) IconButton(onClick = {
-                showDownloadIcon = false
-                viewModel.downloadVideo(videoItemUiState)
-            }) {
-                Icon(painter = painterResource(id = R.drawable.outline_download_24), contentDescription = "")
+            if (!inProgress.value)
+                IconButton(
+                    onClick = {
+                        viewModel.downloadVideo(videoItemUiState)
+                        inProgress.value = true
+                    }) {
+                    Icon(painter = painterResource(id = R.drawable.outline_download_24), contentDescription = "")
             }
-            else if(currentValue < 1f)
-                CircularProgressIndicator(color = Green700)
         }
         Divider(thickness = 5.dp, color = Color.White)
-        CustomProgressIndicator(videoItemUiState)
+        if (inProgress.value)
+            CustomProgressIndicator(videoItemUiState,inProgress)
     }
 
 }
 @Composable
-fun CustomProgressIndicator(videoItemUiState: VideoItemUi) {
+fun CustomProgressIndicator(videoItemUiState: VideoItemUi,inProgress: MutableState<Boolean>) {
     val currentValue by remember { videoItemUiState.currentValue }
-    val inProgress by remember { videoItemUiState.inProgress }
     val maxValue by remember { videoItemUiState.maxValue }
+    val context = LocalContext.current
 
-    val formattedMaxValue = formatFileSize(LocalContext.current , maxValue.toLong())
-    val formattedCurrentValue = formatFileSize(LocalContext.current , currentValue.toLong())
+    if (currentValue == maxValue && maxValue > 0)
+        inProgress.value = false
 
-    if (inProgress)
-        Column(horizontalAlignment = Alignment.End, modifier = Modifier
-            .fillMaxSize()
-            .padding(5.dp)){
+    val formattedMaxValue = formatFileSize(context , maxValue.toLong())
+    val formattedCurrentValue = formatFileSize(context , currentValue.toLong())
+    Column(horizontalAlignment = Alignment.End, modifier = Modifier
+        .fillMaxSize()
+        .padding(5.dp)){
         ProgressStatus(formattedCurrentValue,formattedMaxValue)
         CustomLinearProgressIndicator(currentValue,maxValue)
-
     }
 
 }

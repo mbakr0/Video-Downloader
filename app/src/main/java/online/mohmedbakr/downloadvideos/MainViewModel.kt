@@ -56,6 +56,7 @@ class MainViewModel(
             }
     }
     fun downloadVideo(video: VideoItemUi) {
+        video.inProgress.value = true
         downLoadVideoRepository.createFile(video.username)
         if (video.platform == Platform.Youtube && !URLUtil.isValidUrl(video.urlVideo))
             compositeDisposable.add(getYoutubeVideoUrl(video))
@@ -69,7 +70,6 @@ class MainViewModel(
                 if (!result.isNullOrEmpty()) {
                     video.urlVideo = result
                     downloadFileObservable(video)
-                    _uiStateSuccess.postValue(result)
                 } else
                     onError(error.message!!)
             }
@@ -82,6 +82,7 @@ class MainViewModel(
                     onError(error.message!!)
                 else
                     onSuccess(result)
+                video.inProgress.value = false
             }
     }
 
