@@ -35,4 +35,4 @@ add key
 ```
 ### preview
 
-[Youtube](https://drive.google.com/file/d/1v42kRSNM4JxvEUfuWkyfj-_Kk0MBJwLJ/view)
+[Video](https://drive.google.com/file/d/1v42kRSNM4JxvEUfuWkyfj-_Kk0MBJwLJ/view)
